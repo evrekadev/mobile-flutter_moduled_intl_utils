@@ -1,5 +1,5 @@
-import 'package:intl_utils/src/parser/icu_parser.dart';
-import 'package:intl_utils/src/parser/message_format.dart';
+import 'package:moduled_intl_utils/src/parser/icu_parser.dart';
+import 'package:moduled_intl_utils/src/parser/message_format.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -25,15 +25,13 @@ void main() {
     });
 
     test('Test literal message with special characters', () {
-      var response =
-          IcuParser().parse('Special characters: ,./?\\[]!@#\$%^&*()_+-=');
+      var response = IcuParser().parse('Special characters: ,./?\\[]!@#\$%^&*()_+-=');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(0).type, equals(ElementType.literal));
-      expect(response?.elementAt(0).value,
-          equals('Special characters: ,./?\\[]!@#\$%^&*()_+-='));
+      expect(response?.elementAt(0).value, equals('Special characters: ,./?\\[]!@#\$%^&*()_+-='));
     });
 
     test('Test literal message with a tag', () {
@@ -43,32 +41,27 @@ void main() {
       expect(response?.length, equals(1));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(0).type, equals(ElementType.literal));
-      expect(response?.elementAt(0).value,
-          equals('Literal message with a <b>tag</b>.'));
+      expect(response?.elementAt(0).value, equals('Literal message with a <b>tag</b>.'));
     });
 
     test('Test literal message wrapped with tag', () {
-      var response =
-          IcuParser().parse('<p>Literal message with a <b>tag</b>.</p>');
+      var response = IcuParser().parse('<p>Literal message with a <b>tag</b>.</p>');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(0).type, equals(ElementType.literal));
-      expect(response?.elementAt(0).value,
-          equals('<p>Literal message with a <b>tag</b>.</p>'));
+      expect(response?.elementAt(0).value, equals('<p>Literal message with a <b>tag</b>.</p>'));
     });
 
     test('Test literal message with different tags', () {
-      var response = IcuParser()
-          .parse('<p>Literal <i>message</i> with a <br/> <b>tag</b>.</p><br>');
+      var response = IcuParser().parse('<p>Literal <i>message</i> with a <br/> <b>tag</b>.</p><br>');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(0).type, equals(ElementType.literal));
-      expect(response?.elementAt(0).value,
-          equals('<p>Literal <i>message</i> with a <br/> <b>tag</b>.</p><br>'));
+      expect(response?.elementAt(0).value, equals('<p>Literal <i>message</i> with a <br/> <b>tag</b>.</p><br>'));
     });
 
     test('Test literal message with a less-than sign', () {
@@ -78,8 +71,7 @@ void main() {
       expect(response?.length, equals(1));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(0).type, equals(ElementType.literal));
-      expect(response?.elementAt(0).value,
-          equals('Literal message with a < sign.'));
+      expect(response?.elementAt(0).value, equals('Literal message with a < sign.'));
     });
 
     test('Test literal message with a greater-than sign', () {
@@ -89,13 +81,11 @@ void main() {
       expect(response?.length, equals(1));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(0).type, equals(ElementType.literal));
-      expect(response?.elementAt(0).value,
-          equals('Literal message with a > sign.'));
+      expect(response?.elementAt(0).value, equals('Literal message with a > sign.'));
     });
 
     test('Test literal message with a simple json string', () {
-      var response =
-          IcuParser().parse('{ "firstName": "John", "lastName": "Doe" }');
+      var response = IcuParser().parse('{ "firstName": "John", "lastName": "Doe" }');
 
       expect(response, isNotNull);
       expect(response?.length, equals(2));
@@ -105,13 +95,11 @@ void main() {
 
       expect(response?.elementAt(1).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(1).type, equals(ElementType.literal));
-      expect(response?.elementAt(1).value,
-          equals(' "firstName": "John", "lastName": "Doe" }'));
+      expect(response?.elementAt(1).value, equals(' "firstName": "John", "lastName": "Doe" }'));
     });
 
     test('Test literal message with a nested json string', () {
-      var response = IcuParser().parse(
-          '{ "firstName": "John", "lastName": "Doe", "address": { "street": "Some street 123", "city": "Some city" } }');
+      var response = IcuParser().parse('{ "firstName": "John", "lastName": "Doe", "address": { "street": "Some street 123", "city": "Some city" } }');
 
       expect(response, isNotNull);
       expect(response?.length, equals(4));
@@ -121,8 +109,7 @@ void main() {
 
       expect(response?.elementAt(1).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(1).type, equals(ElementType.literal));
-      expect(response?.elementAt(1).value,
-          equals(' "firstName": "John", "lastName": "Doe", "address": '));
+      expect(response?.elementAt(1).value, equals(' "firstName": "John", "lastName": "Doe", "address": '));
 
       expect(response?.elementAt(2).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(2).type, equals(ElementType.literal));
@@ -130,13 +117,12 @@ void main() {
 
       expect(response?.elementAt(3).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(3).type, equals(ElementType.literal));
-      expect(response?.elementAt(3).value,
-          equals(' "street": "Some street 123", "city": "Some city" } }'));
+      expect(response?.elementAt(3).value, equals(' "street": "Some street 123", "city": "Some city" } }'));
     });
 
     test('Test literal message with a complex json string', () {
-      var response = IcuParser().parse(
-          '{ "firstName": "John", "lastName": "Doe", "address": { "street": "Some street 123", "city": "Some city" }, "skills": [ { "name": "programming" }, { "name": "design" } ] }');
+      var response = IcuParser()
+          .parse('{ "firstName": "John", "lastName": "Doe", "address": { "street": "Some street 123", "city": "Some city" }, "skills": [ { "name": "programming" }, { "name": "design" } ] }');
 
       expect(response, isNotNull);
       expect(response?.length, equals(8));
@@ -146,8 +132,7 @@ void main() {
 
       expect(response?.elementAt(1).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(1).type, equals(ElementType.literal));
-      expect(response?.elementAt(1).value,
-          equals(' "firstName": "John", "lastName": "Doe", "address": '));
+      expect(response?.elementAt(1).value, equals(' "firstName": "John", "lastName": "Doe", "address": '));
 
       expect(response?.elementAt(2).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(2).type, equals(ElementType.literal));
@@ -155,10 +140,7 @@ void main() {
 
       expect(response?.elementAt(3).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(3).type, equals(ElementType.literal));
-      expect(
-          response?.elementAt(3).value,
-          equals(
-              ' "street": "Some street 123", "city": "Some city" }, "skills": [ '));
+      expect(response?.elementAt(3).value, equals(' "street": "Some street 123", "city": "Some city" }, "skills": [ '));
 
       expect(response?.elementAt(4).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(4).type, equals(ElementType.literal));
@@ -166,8 +148,7 @@ void main() {
 
       expect(response?.elementAt(5).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(5).type, equals(ElementType.literal));
-      expect(
-          response?.elementAt(5).value, equals(' "name": "programming" }, '));
+      expect(response?.elementAt(5).value, equals(' "name": "programming" }, '));
 
       expect(response?.elementAt(6).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(6).type, equals(ElementType.literal));
@@ -209,19 +190,15 @@ void main() {
       expect(response?.elementAt(2).value, equals('!'));
     });
 
-    test(
-        'Test argument message with placeholder and plain text when there are no space around placeholder',
-        () {
-      var response = IcuParser()
-          .parse('Link: https://example.com?user={username}&test=yes');
+    test('Test argument message with placeholder and plain text when there are no space around placeholder', () {
+      var response = IcuParser().parse('Link: https://example.com?user={username}&test=yes');
 
       expect(response, isNotNull);
       expect(response?.length, equals(3));
 
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(0).type, equals(ElementType.literal));
-      expect(response?.elementAt(0).value,
-          equals('Link: https://example.com?user='));
+      expect(response?.elementAt(0).value, equals('Link: https://example.com?user='));
 
       expect(response?.elementAt(1).runtimeType, equals(ArgumentElement));
       expect(response?.elementAt(1).type, equals(ElementType.argument));
@@ -233,8 +210,7 @@ void main() {
     });
 
     test('Test argument message with few placeholders and plain text', () {
-      var response =
-          IcuParser().parse('My name is {lastName}, {firstName} {lastName}!');
+      var response = IcuParser().parse('My name is {lastName}, {firstName} {lastName}!');
 
       expect(response, isNotNull);
       expect(response?.length, equals(7));
@@ -268,19 +244,15 @@ void main() {
       expect(response?.elementAt(6).value, equals('!'));
     });
 
-    test(
-        'Test argument message with placeholder and plain text that contains tags',
-        () {
-      var response = IcuParser().parse(
-          'Argument message with <em>{placeholder}</em> and <b>tag</b>!');
+    test('Test argument message with placeholder and plain text that contains tags', () {
+      var response = IcuParser().parse('Argument message with <em>{placeholder}</em> and <b>tag</b>!');
 
       expect(response, isNotNull);
       expect(response?.length, equals(3));
 
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(0).type, equals(ElementType.literal));
-      expect(
-          response?.elementAt(0).value, equals('Argument message with <em>'));
+      expect(response?.elementAt(0).value, equals('Argument message with <em>'));
 
       expect(response?.elementAt(1).runtimeType, equals(ArgumentElement));
       expect(response?.elementAt(1).type, equals(ElementType.argument));
@@ -291,19 +263,15 @@ void main() {
       expect(response?.elementAt(2).value, equals('</em> and <b>tag</b>!'));
     });
 
-    test(
-        'Test argument message with placeholder and plain text wrapped with a tag',
-        () {
-      var response = IcuParser().parse(
-          '<p>Argument message with <em>{placeholder}</em> and <b>tag</b>!</p>');
+    test('Test argument message with placeholder and plain text wrapped with a tag', () {
+      var response = IcuParser().parse('<p>Argument message with <em>{placeholder}</em> and <b>tag</b>!</p>');
 
       expect(response, isNotNull);
       expect(response?.length, equals(3));
 
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(0).type, equals(ElementType.literal));
-      expect(response?.elementAt(0).value,
-          equals('<p>Argument message with <em>'));
+      expect(response?.elementAt(0).value, equals('<p>Argument message with <em>'));
 
       expect(response?.elementAt(1).runtimeType, equals(ArgumentElement));
       expect(response?.elementAt(1).type, equals(ElementType.argument));
@@ -314,19 +282,15 @@ void main() {
       expect(response?.elementAt(2).value, equals('</em> and <b>tag</b>!</p>'));
     });
 
-    test(
-        'Test argument message with placeholder and plain text that contains different tags',
-        () {
-      var response = IcuParser().parse(
-          '<p>Argument <i>message</i> with <br/> <em>{placeholder}</em> and <b>tag</b>!</p><br>');
+    test('Test argument message with placeholder and plain text that contains different tags', () {
+      var response = IcuParser().parse('<p>Argument <i>message</i> with <br/> <em>{placeholder}</em> and <b>tag</b>!</p><br>');
 
       expect(response, isNotNull);
       expect(response?.length, equals(3));
 
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(0).type, equals(ElementType.literal));
-      expect(response?.elementAt(0).value,
-          equals('<p>Argument <i>message</i> with <br/> <em>'));
+      expect(response?.elementAt(0).value, equals('<p>Argument <i>message</i> with <br/> <em>'));
 
       expect(response?.elementAt(1).runtimeType, equals(ArgumentElement));
       expect(response?.elementAt(1).type, equals(ElementType.argument));
@@ -334,15 +298,11 @@ void main() {
 
       expect(response?.elementAt(2).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(2).type, equals(ElementType.literal));
-      expect(response?.elementAt(2).value,
-          equals('</em> and <b>tag</b>!</p><br>'));
+      expect(response?.elementAt(2).value, equals('</em> and <b>tag</b>!</p><br>'));
     });
 
-    test(
-        'Test argument message with placeholder and plain text that contains less-than sign',
-        () {
-      var response =
-          IcuParser().parse('Argument message with {placeholder} and < sign.');
+    test('Test argument message with placeholder and plain text that contains less-than sign', () {
+      var response = IcuParser().parse('Argument message with {placeholder} and < sign.');
 
       expect(response, isNotNull);
       expect(response?.length, equals(3));
@@ -360,11 +320,8 @@ void main() {
       expect(response?.elementAt(2).value, equals(' and < sign.'));
     });
 
-    test(
-        'Test argument message with placeholder and plain text that contains greater-than sign',
-        () {
-      var response =
-          IcuParser().parse('Argument message with {placeholder} and > sign.');
+    test('Test argument message with placeholder and plain text that contains greater-than sign', () {
+      var response = IcuParser().parse('Argument message with {placeholder} and > sign.');
 
       expect(response, isNotNull);
       expect(response?.length, equals(3));
@@ -382,10 +339,8 @@ void main() {
       expect(response?.elementAt(2).value, equals(' and > sign.'));
     });
 
-    test('Test argument message when content contains a simple json string',
-        () {
-      var response = IcuParser().parse(
-          'Argument message: {name} - { "firstName": "John", "lastName": "Doe" }');
+    test('Test argument message when content contains a simple json string', () {
+      var response = IcuParser().parse('Argument message: {name} - { "firstName": "John", "lastName": "Doe" }');
 
       expect(response, isNotNull);
       expect(response?.length, equals(5));
@@ -408,14 +363,11 @@ void main() {
 
       expect(response?.elementAt(4).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(4).type, equals(ElementType.literal));
-      expect(response?.elementAt(4).value,
-          equals(' "firstName": "John", "lastName": "Doe" }'));
+      expect(response?.elementAt(4).value, equals(' "firstName": "John", "lastName": "Doe" }'));
     });
 
-    test('Test argument message when content contains a nested json string',
-        () {
-      var response = IcuParser().parse(
-          'Argument message: {name} - { "firstName": "John", "lastName": "Doe", "address": { "street": "Some street 123", "city": "Some city" } }');
+    test('Test argument message when content contains a nested json string', () {
+      var response = IcuParser().parse('Argument message: {name} - { "firstName": "John", "lastName": "Doe", "address": { "street": "Some street 123", "city": "Some city" } }');
 
       expect(response, isNotNull);
       expect(response?.length, equals(7));
@@ -438,8 +390,7 @@ void main() {
 
       expect(response?.elementAt(4).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(4).type, equals(ElementType.literal));
-      expect(response?.elementAt(4).value,
-          equals(' "firstName": "John", "lastName": "Doe", "address": '));
+      expect(response?.elementAt(4).value, equals(' "firstName": "John", "lastName": "Doe", "address": '));
 
       expect(response?.elementAt(5).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(5).type, equals(ElementType.literal));
@@ -447,12 +398,10 @@ void main() {
 
       expect(response?.elementAt(6).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(6).type, equals(ElementType.literal));
-      expect(response?.elementAt(6).value,
-          equals(' "street": "Some street 123", "city": "Some city" } }'));
+      expect(response?.elementAt(6).value, equals(' "street": "Some street 123", "city": "Some city" } }'));
     });
 
-    test('Test argument message when content contains a complex json string',
-        () {
+    test('Test argument message when content contains a complex json string', () {
       var response = IcuParser().parse(
           'Argument message: {name} - { "firstName": "John", "lastName": "Doe", "address": { "street": "Some street 123", "city": "Some city" }, "skills": [ { "name": "programming" }, { "name": "design" } ] }');
 
@@ -477,8 +426,7 @@ void main() {
 
       expect(response?.elementAt(4).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(4).type, equals(ElementType.literal));
-      expect(response?.elementAt(4).value,
-          equals(' "firstName": "John", "lastName": "Doe", "address": '));
+      expect(response?.elementAt(4).value, equals(' "firstName": "John", "lastName": "Doe", "address": '));
 
       expect(response?.elementAt(5).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(5).type, equals(ElementType.literal));
@@ -486,10 +434,7 @@ void main() {
 
       expect(response?.elementAt(6).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(6).type, equals(ElementType.literal));
-      expect(
-          response?.elementAt(6).value,
-          equals(
-              ' "street": "Some street 123", "city": "Some city" }, "skills": [ '));
+      expect(response?.elementAt(6).value, equals(' "street": "Some street 123", "city": "Some city" }, "skills": [ '));
 
       expect(response?.elementAt(7).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(7).type, equals(ElementType.literal));
@@ -497,8 +442,7 @@ void main() {
 
       expect(response?.elementAt(8).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(8).type, equals(ElementType.literal));
-      expect(
-          response?.elementAt(8).value, equals(' "name": "programming" }, '));
+      expect(response?.elementAt(8).value, equals(' "name": "programming" }, '));
 
       expect(response?.elementAt(9).runtimeType, equals(LiteralElement));
       expect(response?.elementAt(9).type, equals(ElementType.literal));
@@ -509,11 +453,8 @@ void main() {
       expect(response?.elementAt(10).value, equals(' "name": "design" } ] }'));
     });
 
-    test(
-        'Test argument message when content contains a json string with placeholders',
-        () {
-      var response = IcuParser().parse(
-          '{ "name": "{name}", "address": { "street": "{street}", "city": "{city}" } }');
+    test('Test argument message when content contains a json string with placeholders', () {
+      var response = IcuParser().parse('{ "name": "{name}", "address": { "street": "{street}", "city": "{city}" } }');
 
       expect(response, isNotNull);
       expect(response?.length, equals(10));
@@ -561,11 +502,8 @@ void main() {
   });
 
   group('Plural messages', () {
-    test(
-        'Test plural message with all plural forms when plural forms have plain text',
-        () {
-      var response = IcuParser().parse(
-          '{count, plural, zero {zero message} one {one message} two {two message} few {few message} many {many message} other {other message}}');
+    test('Test plural message with all plural forms when plural forms have plain text', () {
+      var response = IcuParser().parse('{count, plural, zero {zero message} one {one message} two {two message} few {few message} many {many message} other {other message}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -614,11 +552,8 @@ void main() {
       expect(options[5].value[0].value, equals('other message'));
     });
 
-    test(
-        'Test plural message with all plural forms when plural forms are empty',
-        () {
-      var response = IcuParser().parse(
-          '{count, plural, zero {} one {} two {} few {} many {} other {}}');
+    test('Test plural message with all plural forms when plural forms are empty', () {
+      var response = IcuParser().parse('{count, plural, zero {} one {} two {} few {} many {} other {}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -667,11 +602,8 @@ void main() {
       expect(options[5].value[0].value, equals(''));
     });
 
-    test(
-        'Test plural message with all plural forms when there are no whitespace around plural forms',
-        () {
-      var response = IcuParser().parse(
-          '{count,plural,zero{zero message}one{one message}two{two message}few{few message}many{many message}other{other message}}');
+    test('Test plural message with all plural forms when there are no whitespace around plural forms', () {
+      var response = IcuParser().parse('{count,plural,zero{zero message}one{one message}two{two message}few{few message}many{many message}other{other message}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -720,11 +652,8 @@ void main() {
       expect(options[5].value[0].value, equals('other message'));
     });
 
-    test(
-        'Test plural message with all plural forms where zero, one and two plural forms are expressed in the "equal-number" way',
-        () {
-      var response = IcuParser().parse(
-          '{count, plural, =0 {=0 message} =1 {=1 message} =2 {=2 message} few {few message} many {many message} other {other message}}');
+    test('Test plural message with all plural forms where zero, one and two plural forms are expressed in the "equal-number" way', () {
+      var response = IcuParser().parse('{count, plural, =0 {=0 message} =1 {=1 message} =2 {=2 message} few {few message} many {many message} other {other message}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -773,9 +702,7 @@ void main() {
       expect(options[5].value[0].value, equals('other message'));
     });
 
-    test(
-        'Test plural message with all plural forms when plural forms have placeholder',
-        () {
+    test('Test plural message with all plural forms when plural forms have placeholder', () {
       var response = IcuParser().parse(
           '{count, plural, zero {zero message with {name} placeholder.} one {one message with {name} placeholder.} two {two message with {name} placeholder.} few {few message with {name} placeholder.} many {many message with {name} placeholder.} other {other message with {name} placeholder.}}');
 
@@ -862,9 +789,7 @@ void main() {
       expect(options[5].value[2].value, equals(' placeholder.'));
     });
 
-    test(
-        'Test plural message with all plural forms when plural forms have few placeholders',
-        () {
+    test('Test plural message with all plural forms when plural forms have few placeholders', () {
       var response = IcuParser().parse(
           '{count, plural, =0 {{firstName} {lastName}: zero message} =1 {{firstName} {lastName}: one message} =2 {{firstName} {lastName}: two message} few {{firstName} {lastName}: few message} many {{firstName} {lastName}: many message} other {{firstName} {lastName}: other message}}');
 
@@ -969,9 +894,7 @@ void main() {
       expect(options[5].value[3].value, equals(': other message'));
     });
 
-    test(
-        'Test plural message with one and other plural forms when plural forms have gender message',
-        () {
+    test('Test plural message with one and other plural forms when plural forms have gender message', () {
       var response = IcuParser().parse(
           '{count, plural, one {{gender, select, female {Girl has} male {Boy has} other {Person has}} one item} other {{gender, select, female {Girl has} male {Boy has} other {Person has}} {count} items}}');
 
@@ -1051,8 +974,7 @@ void main() {
     });
 
     // Note: Tags are not supported in plural messages with the current parser implementation. Use compound messages as an alternative.
-    test('Test plural message with all plural forms when plural forms have tag',
-        () {
+    test('Test plural message with all plural forms when plural forms have tag', () {
       var response = IcuParser().parse(
           '{count, plural, zero {<b>zero</b> message.} one {<b>one</b> message.} two {<b>two</b> message.} few {<b>few</b> message.} many {<b>many</b> message.} other {<b>other</b> message.}}');
 
@@ -1104,9 +1026,7 @@ void main() {
     }, skip: true);
 
     // Note: Tags are not supported in plural messages with the current parser implementation. Use compound messages as an alternative.
-    test(
-        'Test plural message with all plural forms when plural forms have placeholder and tag',
-        () {
+    test('Test plural message with all plural forms when plural forms have placeholder and tag', () {
       var response = IcuParser().parse(
           '{count, plural, zero {<b>zero</b> message {placeholder}.} one {<b>one</b> message {placeholder}.} two {<b>two</b> message {placeholder}.} few {<b>few</b> message {placeholder}.} many {<b>many</b> message {placeholder}.} other {<b>other</b> message {placeholder}.}}');
 
@@ -1194,9 +1114,7 @@ void main() {
     }, skip: true);
 
     // Note: Less-than sign is not supported in plural messages with the current parser implementation. Use compound messages as an alternative.
-    test(
-        'Test plural message with all plural forms when plural forms have less-than sign',
-        () {
+    test('Test plural message with all plural forms when plural forms have less-than sign', () {
       var response = IcuParser().parse(
           '{count, plural, zero {zero message with < sign.} one {one message with < sign.} two {two message with < sign.} few {few message with < sign.} many {many message with < sign.} other {other message with < sign.}}');
 
@@ -1247,9 +1165,7 @@ void main() {
       expect(options[5].value[0].value, equals('other message with < sign.'));
     }, skip: true);
 
-    test(
-        'Test plural message with all plural forms when plural forms have greater-than sign',
-        () {
+    test('Test plural message with all plural forms when plural forms have greater-than sign', () {
       var response = IcuParser().parse(
           '{count, plural, zero {zero message with > sign.} one {one message with > sign.} two {two message with > sign.} few {few message with > sign.} many {many message with > sign.} other {other message with > sign.}}');
 
@@ -1302,11 +1218,8 @@ void main() {
   });
 
   group('Gender messages', () {
-    test(
-        'Test gender message with all gender forms when gender forms have plain text',
-        () {
-      var response = IcuParser().parse(
-          '{gender, select, female {Hi woman!} male {Hi man!} other {Hi there!}}');
+    test('Test gender message with all gender forms when gender forms have plain text', () {
+      var response = IcuParser().parse('{gender, select, female {Hi woman!} male {Hi man!} other {Hi there!}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1337,11 +1250,8 @@ void main() {
       expect(options[2].value[0].value, equals('Hi there!'));
     });
 
-    test(
-        'Test gender message with all gender forms when gender forms are empty',
-        () {
-      var response =
-          IcuParser().parse('{gender, select, female {} male {} other {}}');
+    test('Test gender message with all gender forms when gender forms are empty', () {
+      var response = IcuParser().parse('{gender, select, female {} male {} other {}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1372,11 +1282,8 @@ void main() {
       expect(options[2].value[0].value, equals(''));
     });
 
-    test(
-        'Test gender message with all gender forms when there are no whitespace around gender forms',
-        () {
-      var response = IcuParser().parse(
-          '{gender,select,female{Hi woman!}male{Hi man!}other{Hi there!}}');
+    test('Test gender message with all gender forms when there are no whitespace around gender forms', () {
+      var response = IcuParser().parse('{gender,select,female{Hi woman!}male{Hi man!}other{Hi there!}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1407,11 +1314,8 @@ void main() {
       expect(options[2].value[0].value, equals('Hi there!'));
     });
 
-    test(
-        'Test gender message with all gender forms when gender forms have placeholder',
-        () {
-      var response = IcuParser().parse(
-          '{gender, select, female {Miss {firstName}.} male {Mister {firstName}.} other {User {firstName}.}}');
+    test('Test gender message with all gender forms when gender forms have placeholder', () {
+      var response = IcuParser().parse('{gender, select, female {Miss {firstName}.} male {Mister {firstName}.} other {User {firstName}.}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1460,11 +1364,9 @@ void main() {
       expect(options[2].value[2].value, equals('.'));
     });
 
-    test(
-        'Test gender message with all gender forms when gender forms have few placeholders',
-        () {
-      var response = IcuParser().parse(
-          '{gender, select, female {Miss {firstName} {lastName} from {address}.} male {Mister {firstName} {lastName} from {address}.} other {User {firstName} {lastName} from {address}.}}');
+    test('Test gender message with all gender forms when gender forms have few placeholders', () {
+      var response = IcuParser()
+          .parse('{gender, select, female {Miss {firstName} {lastName} from {address}.} male {Mister {firstName} {lastName} from {address}.} other {User {firstName} {lastName} from {address}.}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1549,9 +1451,7 @@ void main() {
       expect(options[2].value[6].value, equals('.'));
     });
 
-    test(
-        'Test gender message with all gender forms when gender forms have plural message',
-        () {
+    test('Test gender message with all gender forms when gender forms have plural message', () {
       var response = IcuParser().parse(
           '{gender, select, female {She has {count, plural, one {one apple} other {{count} apples}}} male {He has {count, plural, one {one apple} other {{count} apples}}} other {Person has {count, plural, one {one apple} other {{count} apples}}}}');
 
@@ -1645,10 +1545,8 @@ void main() {
     });
 
     // Note: Tags are not supported in gender messages with the current parser implementation. Use compound messages as an alternative.
-    test('Test gender message with all gender forms when gender forms have tag',
-        () {
-      var response = IcuParser().parse(
-          '{gender, select, female {<b>female</b> message.} male {<b>male</b> message.} other {<b>other</b> message.}}');
+    test('Test gender message with all gender forms when gender forms have tag', () {
+      var response = IcuParser().parse('{gender, select, female {<b>female</b> message.} male {<b>male</b> message.} other {<b>other</b> message.}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1680,11 +1578,8 @@ void main() {
     }, skip: true);
 
     // Note: Tags are not supported in gender messages with the current parser implementation. Use compound messages as an alternative.
-    test(
-        'Test gender message with all gender forms when gender forms have placeholder and tag',
-        () {
-      var response = IcuParser().parse(
-          '{gender, select, female {<b>female</b> message {placeholder}.} male {<b>male</b> message {placeholder}.} other {<b>other</b> message {placeholder}.}}');
+    test('Test gender message with all gender forms when gender forms have placeholder and tag', () {
+      var response = IcuParser().parse('{gender, select, female {<b>female</b> message {placeholder}.} male {<b>male</b> message {placeholder}.} other {<b>other</b> message {placeholder}.}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1734,11 +1629,8 @@ void main() {
     }, skip: true);
 
     // Note: Less-than sign is not supported in gender messages with the current parser implementation. Use compound messages as an alternative.
-    test(
-        'Test gender message with all gender forms when gender forms have less-than sign',
-        () {
-      var response = IcuParser().parse(
-          '{gender, select, female {female message with < sign.} male {male message with < sign.} other {other message with < sign.}}');
+    test('Test gender message with all gender forms when gender forms have less-than sign', () {
+      var response = IcuParser().parse('{gender, select, female {female message with < sign.} male {male message with < sign.} other {other message with < sign.}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1769,11 +1661,8 @@ void main() {
       expect(options[2].value[0].value, equals('other message with < sign.'));
     }, skip: true);
 
-    test(
-        'Test gender message with all gender forms when gender forms have greater-than sign',
-        () {
-      var response = IcuParser().parse(
-          '{gender, select, female {female message with > sign.} male {male message with > sign.} other {other message with > sign.}}');
+    test('Test gender message with all gender forms when gender forms have greater-than sign', () {
+      var response = IcuParser().parse('{gender, select, female {female message with > sign.} male {male message with > sign.} other {other message with > sign.}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1807,8 +1696,7 @@ void main() {
 
   group('Select messages', () {
     test('Test select message when select forms have plain text', () {
-      var response = IcuParser().parse(
-          '{choice, select, foo {This is foo option} bar {This is bar option} baz {This is baz option}}');
+      var response = IcuParser().parse('{choice, select, foo {This is foo option} bar {This is bar option} baz {This is baz option}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1840,8 +1728,7 @@ void main() {
     });
 
     test('Test select message when select forms are empty', () {
-      var response =
-          IcuParser().parse('{choice, select, foo {} bar {} baz {}}');
+      var response = IcuParser().parse('{choice, select, foo {} bar {} baz {}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1872,10 +1759,8 @@ void main() {
       expect(options[2].value[0].value, equals(''));
     });
 
-    test('Test select message when there are no whitespace around select forms',
-        () {
-      var response = IcuParser().parse(
-          '{choice,select,foo{This is foo option}bar{This is bar option}baz{This is baz option}}');
+    test('Test select message when there are no whitespace around select forms', () {
+      var response = IcuParser().parse('{choice,select,foo{This is foo option}bar{This is bar option}baz{This is baz option}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1907,8 +1792,8 @@ void main() {
     });
 
     test('Test select message when select forms have placeholder', () {
-      var response = IcuParser().parse(
-          '{choice, select, foo {This is foo option with {name} placeholder} bar {This is bar option with {name} placeholder} baz {This is baz option with {name} placeholder}}');
+      var response =
+          IcuParser().parse('{choice, select, foo {This is foo option with {name} placeholder} bar {This is bar option with {name} placeholder} baz {This is baz option with {name} placeholder}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -1958,8 +1843,7 @@ void main() {
     });
 
     test('Test select message when select forms have few placeholders', () {
-      var response = IcuParser().parse(
-          '{choice, select, foo {Foo: {firstName} {lastName}} bar {Bar: {firstName} {lastName}} baz {Baz: {firstName} {lastName}}}');
+      var response = IcuParser().parse('{choice, select, foo {Foo: {firstName} {lastName}} bar {Bar: {firstName} {lastName}} baz {Baz: {firstName} {lastName}}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -2019,8 +1903,7 @@ void main() {
 
     // Note: Tags are not supported in select messages with the current parser implementation. Use compound messages as an alternative.
     test('Test select message when select forms have tag', () {
-      var response = IcuParser().parse(
-          '{choice, select, foo {<b>foo</b> message.} bar {<b>bar</b> message.} other {<b>other</b> message.}}');
+      var response = IcuParser().parse('{choice, select, foo {<b>foo</b> message.} bar {<b>bar</b> message.} other {<b>other</b> message.}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -2053,8 +1936,7 @@ void main() {
 
     // Note: Tags are not supported in select messages with the current parser implementation. Use compound messages as an alternative.
     test('Test select message when select forms have placeholder and tag', () {
-      var response = IcuParser().parse(
-          '{choice, select, foo {<b>foo</b> message {placeholder}.} bar {<b>bar</b> message {placeholder}.} other {<b>other</b> message {placeholder}.}}');
+      var response = IcuParser().parse('{choice, select, foo {<b>foo</b> message {placeholder}.} bar {<b>bar</b> message {placeholder}.} other {<b>other</b> message {placeholder}.}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -2105,8 +1987,7 @@ void main() {
 
     // Note: Less-than sign is not supported in select messages with the current parser implementation. Use compound messages as an alternative.
     test('Test select message when select forms have less-than sign', () {
-      var response = IcuParser().parse(
-          '{choice, select, foo {foo message with < sign.} bar {bar message with < sign.} other {other message with < sign.}}');
+      var response = IcuParser().parse('{choice, select, foo {foo message with < sign.} bar {bar message with < sign.} other {other message with < sign.}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -2138,8 +2019,7 @@ void main() {
     }, skip: true);
 
     test('Test select message when select forms have greater-than sign', () {
-      var response = IcuParser().parse(
-          '{choice, select, foo {foo message with > sign.} bar {bar message with > sign.} other {other message with > sign.}}');
+      var response = IcuParser().parse('{choice, select, foo {foo message with > sign.} bar {bar message with > sign.} other {other message with > sign.}}');
 
       expect(response, isNotNull);
       expect(response?.length, equals(1));
@@ -2173,8 +2053,7 @@ void main() {
 
   group('Compound messages', () {
     test('Test compound message of literal and plural', () {
-      var response = IcuParser().parse(
-          'John has {count, plural, one {{count} apple} other {{count} apples}}.');
+      var response = IcuParser().parse('John has {count, plural, one {{count} apple} other {{count} apples}}.');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2213,8 +2092,7 @@ void main() {
     });
 
     test('Test compound message of literal and plural with a tag', () {
-      var response = IcuParser().parse(
-          'The <b>John</b> has {count, plural, one {{count} apple} other {{count} apples}}.');
+      var response = IcuParser().parse('The <b>John</b> has {count, plural, one {{count} apple} other {{count} apples}}.');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2253,8 +2131,7 @@ void main() {
     });
 
     test('Test compound message of literal and plural wrapped with tag', () {
-      var response = IcuParser().parse(
-          '<p>The <b>John</b> has {count, plural, one {{count} apple} other {{count} apples}}.</p>');
+      var response = IcuParser().parse('<p>The <b>John</b> has {count, plural, one {{count} apple} other {{count} apples}}.</p>');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2293,8 +2170,7 @@ void main() {
     });
 
     test('Test compound message of literal and gender', () {
-      var response = IcuParser().parse(
-          'Welcome {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}}.');
+      var response = IcuParser().parse('Welcome {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}}.');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2342,8 +2218,7 @@ void main() {
     });
 
     test('Test compound message of literal and gender with a tag', () {
-      var response = IcuParser().parse(
-          '<b>Welcome</b> {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}}.');
+      var response = IcuParser().parse('<b>Welcome</b> {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}}.');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2391,8 +2266,7 @@ void main() {
     });
 
     test('Test compound message of literal and gender wrapped with tag', () {
-      var response = IcuParser().parse(
-          '<p><b>Welcome</b> {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}}.</p>');
+      var response = IcuParser().parse('<p><b>Welcome</b> {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}}.</p>');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2440,8 +2314,7 @@ void main() {
     });
 
     test('Test compound message of literal and select', () {
-      var response = IcuParser().parse(
-          'The {choice, select, admin {admin {name}} owner {owner {name}} other {user {name}}}.');
+      var response = IcuParser().parse('The {choice, select, admin {admin {name}} owner {owner {name}} other {user {name}}}.');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2489,8 +2362,7 @@ void main() {
     });
 
     test('Test compound message of literal and select with a tag', () {
-      var response = IcuParser().parse(
-          '<b>The</b> {choice, select, admin {admin {name}} owner {owner {name}} other {user {name}}}.');
+      var response = IcuParser().parse('<b>The</b> {choice, select, admin {admin {name}} owner {owner {name}} other {user {name}}}.');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2538,8 +2410,7 @@ void main() {
     });
 
     test('Test compound message of literal and select wrapped with tag', () {
-      var response = IcuParser().parse(
-          '<p><b>The</b> {choice, select, admin {admin {name}} owner {owner {name}} other {user {name}}}.</p>');
+      var response = IcuParser().parse('<p><b>The</b> {choice, select, admin {admin {name}} owner {owner {name}} other {user {name}}}.</p>');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2587,8 +2458,7 @@ void main() {
     });
 
     test('Test compound message of argument and plural', () {
-      var response = IcuParser().parse(
-          '{name} has {count, plural, one {{count} apple} other {{count} apples}} in the bag.');
+      var response = IcuParser().parse('{name} has {count, plural, one {{count} apple} other {{count} apples}} in the bag.');
 
       expect(response?.length, equals(4));
       expect(response?.elementAt(0).runtimeType, equals(ArgumentElement));
@@ -2631,8 +2501,7 @@ void main() {
     });
 
     test('Test compound message of argument and plural with a tag', () {
-      var response = IcuParser().parse(
-          'The <b>{name}</b> has {count, plural, one {{count} apple} other {{count} apples}} in the bag.');
+      var response = IcuParser().parse('The <b>{name}</b> has {count, plural, one {{count} apple} other {{count} apples}} in the bag.');
 
       expect(response?.length, equals(5));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2679,8 +2548,7 @@ void main() {
     });
 
     test('Test compound message of argument and plural wrapped with tag', () {
-      var response = IcuParser().parse(
-          '<p>The <b>{name}</b> has {count, plural, one {{count} apple} other {{count} apples}} in the bag.</p>');
+      var response = IcuParser().parse('<p>The <b>{name}</b> has {count, plural, one {{count} apple} other {{count} apples}} in the bag.</p>');
 
       expect(response?.length, equals(5));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2727,8 +2595,7 @@ void main() {
     });
 
     test('Test compound message of argument and gender', () {
-      var response = IcuParser().parse(
-          'The {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} has the {device}.');
+      var response = IcuParser().parse('The {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} has the {device}.');
 
       expect(response?.length, equals(5));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2784,8 +2651,7 @@ void main() {
     });
 
     test('Test compound message of argument and gender with a tag', () {
-      var response = IcuParser().parse(
-          'The {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} has the <b>{device}</b>.');
+      var response = IcuParser().parse('The {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} has the <b>{device}</b>.');
 
       expect(response?.length, equals(5));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2841,8 +2707,7 @@ void main() {
     });
 
     test('Test compound message of argument and gender wrapped with tag', () {
-      var response = IcuParser().parse(
-          '<p>The {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} has the <b>{device}</b>.</p>');
+      var response = IcuParser().parse('<p>The {gender, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} has the <b>{device}</b>.</p>');
 
       expect(response?.length, equals(5));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2898,8 +2763,7 @@ void main() {
     });
 
     test('Test compound message of argument and select', () {
-      var response = IcuParser().parse(
-          'The one {choice, select, coffee {{name} coffee} tea {{name} tea} other {{name} drink}} please for the {client}.');
+      var response = IcuParser().parse('The one {choice, select, coffee {{name} coffee} tea {{name} tea} other {{name} drink}} please for the {client}.');
 
       expect(response?.length, equals(5));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -2955,8 +2819,7 @@ void main() {
     });
 
     test('Test compound message of argument and select with a tag', () {
-      var response = IcuParser().parse(
-          'The one {choice, select, coffee {{name} coffee} tea {{name} tea} other {{name} drink}} please for the <b>{client}</b>.');
+      var response = IcuParser().parse('The one {choice, select, coffee {{name} coffee} tea {{name} tea} other {{name} drink}} please for the <b>{client}</b>.');
 
       expect(response?.length, equals(5));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -3012,8 +2875,7 @@ void main() {
     });
 
     test('Test compound message of argument and select wrapped with tag', () {
-      var response = IcuParser().parse(
-          '<p>The one {choice, select, coffee {{name} coffee} tea {{name} tea} other {{name} drink}} please for the <b>{client}</b>.</p>');
+      var response = IcuParser().parse('<p>The one {choice, select, coffee {{name} coffee} tea {{name} tea} other {{name} drink}} please for the <b>{client}</b>.</p>');
 
       expect(response?.length, equals(5));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -3069,8 +2931,7 @@ void main() {
     });
 
     test('Test compound message of two plurals', () {
-      var response = IcuParser().parse(
-          '{count1, plural, one {{count1} apple} other {{count1} apples}}{count2, plural, one {{count2} orange} other {{count2} oranges}}');
+      var response = IcuParser().parse('{count1, plural, one {{count1} apple} other {{count1} apples}}{count2, plural, one {{count2} orange} other {{count2} oranges}}');
 
       expect(response?.length, equals(2));
       expect(response?.elementAt(0).runtimeType, equals(PluralElement));
@@ -3127,8 +2988,7 @@ void main() {
     });
 
     test('Test compound message of two plurals and plain text', () {
-      var response = IcuParser().parse(
-          '{count1, plural, one {{count1} apple} other {{count1} apples}} and {count2, plural, one {{count2} orange} other {{count2} oranges}}');
+      var response = IcuParser().parse('{count1, plural, one {{count1} apple} other {{count1} apples}} and {count2, plural, one {{count2} orange} other {{count2} oranges}}');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(PluralElement));
@@ -3189,8 +3049,7 @@ void main() {
     });
 
     test('Test compound message of two plurals with a tag', () {
-      var response = IcuParser().parse(
-          '{count1, plural, one {{count1} apple} other {{count1} apples}} <b>and</b> {count2, plural, one {{count2} orange} other {{count2} oranges}}');
+      var response = IcuParser().parse('{count1, plural, one {{count1} apple} other {{count1} apples}} <b>and</b> {count2, plural, one {{count2} orange} other {{count2} oranges}}');
 
       expect(response?.length, equals(3));
       expect(response?.elementAt(0).runtimeType, equals(PluralElement));
@@ -3251,8 +3110,7 @@ void main() {
     });
 
     test('Test compound message of two plurals wrapped with tag', () {
-      var response = IcuParser().parse(
-          '<p>{count1, plural, one {{count1} apple} other {{count1} apples}} <b>and</b> {count2, plural, one {{count2} orange} other {{count2} oranges}}</p>');
+      var response = IcuParser().parse('<p>{count1, plural, one {{count1} apple} other {{count1} apples}} <b>and</b> {count2, plural, one {{count2} orange} other {{count2} oranges}}</p>');
 
       expect(response?.length, equals(5));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -3321,8 +3179,7 @@ void main() {
     });
 
     test('Test compound message of two genders', () {
-      var response = IcuParser().parse(
-          '{gender1, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} and {gender2, select, male {his} female {her} other {its}} cat');
+      var response = IcuParser().parse('{gender1, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} and {gender2, select, male {his} female {her} other {its}} cat');
 
       expect(response?.length, equals(4));
       expect(response?.elementAt(0).runtimeType, equals(GenderElement));
@@ -3396,8 +3253,7 @@ void main() {
     });
 
     test('Test compound message of two genders with a tag', () {
-      var response = IcuParser().parse(
-          '{gender1, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} <b>and</b> {gender2, select, male {his} female {her} other {its}} cat');
+      var response = IcuParser().parse('{gender1, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} <b>and</b> {gender2, select, male {his} female {her} other {its}} cat');
 
       expect(response?.length, equals(4));
       expect(response?.elementAt(0).runtimeType, equals(GenderElement));
@@ -3471,8 +3327,7 @@ void main() {
     });
 
     test('Test compound message of two genders wrapped with tag', () {
-      var response = IcuParser().parse(
-          '<p>{gender1, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} <b>and</b> {gender2, select, male {his} female {her} other {its}} cat</p>');
+      var response = IcuParser().parse('<p>{gender1, select, male {Mr {name}} female {Mrs {name}} other {dear {name}}} <b>and</b> {gender2, select, male {his} female {her} other {its}} cat</p>');
 
       expect(response?.length, equals(5));
       expect(response?.elementAt(0).runtimeType, equals(LiteralElement));
@@ -3550,8 +3405,8 @@ void main() {
     });
 
     test('Test compound message of two selects', () {
-      var response = IcuParser().parse(
-          '{choice1, select, admin {admin {name}} owner {owner {name}} other {user {name}}} with {choice2, select, IELTS {IELTS level} TOEFL {TOEFL level} other {Academic level}} of English');
+      var response = IcuParser()
+          .parse('{choice1, select, admin {admin {name}} owner {owner {name}} other {user {name}}} with {choice2, select, IELTS {IELTS level} TOEFL {TOEFL level} other {Academic level}} of English');
 
       expect(response?.length, equals(4));
       expect(response?.elementAt(0).runtimeType, equals(SelectElement));
@@ -3779,8 +3634,7 @@ void main() {
     });
 
     test('Test compound message with a less-than sign', () {
-      var response = IcuParser().parse(
-          '{gender, select, male {Mr} female {Mrs} other {User}} {name} has < {count, plural, one {{count} apple} other {{count} apples}}.');
+      var response = IcuParser().parse('{gender, select, male {Mr} female {Mrs} other {User}} {name} has < {count, plural, one {{count} apple} other {{count} apples}}.');
 
       expect(response?.length, equals(6));
       expect(response?.elementAt(0).runtimeType, equals(GenderElement));
@@ -3853,8 +3707,7 @@ void main() {
     });
 
     test('Test compound message with a greater-than sign', () {
-      var response = IcuParser().parse(
-          '{gender, select, male {Mr} female {Mrs} other {User}} {name} has > {count, plural, one {{count} apple} other {{count} apples}}.');
+      var response = IcuParser().parse('{gender, select, male {Mr} female {Mrs} other {User}} {name} has > {count, plural, one {{count} apple} other {{count} apples}}.');
 
       expect(response?.length, equals(6));
       expect(response?.elementAt(0).runtimeType, equals(GenderElement));

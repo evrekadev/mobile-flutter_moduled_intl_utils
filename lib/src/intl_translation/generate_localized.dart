@@ -45,10 +45,9 @@
 /// in test/message_extract/generate_from_json.dart
 library generate_localized;
 
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 
 import './src/intl_message.dart';
@@ -156,8 +155,9 @@ class MessageGeneration {
 
     // Now write the map of names to either the direct translation or to a
     // method.
-    var entries = (usableTranslations.expand((translation) => translation.originalMessages!).toSet().toList()..sort((a, b) => a.name.compareTo(b.name))).map((original) => '    "${original.escapeAndValidateString(original.name)}" '
-        ': ${_mapReference(original, locale)}');
+    var entries = (usableTranslations.expand((translation) => translation.originalMessages!).toSet().toList()..sort((a, b) => a.name.compareTo(b.name)))
+        .map((original) => '    "${original.escapeAndValidateString(original.name)}" '
+            ': ${_mapReference(original, locale)}');
     output
       ..write(entries.join(',\n'))
       ..write('\n  };\n}\n');
@@ -177,8 +177,7 @@ class MessageGeneration {
 
   /// [generateIndividualMessageFile] for the beginning of the file,
   /// parameterized by [locale].
-  String prologue(String locale) =>
-      """
+  String prologue(String locale) => """
 // DO NOT EDIT. This is code generated via package:intl/generate_localized.dart
 // This is a library that provides messages for a $locale locale. All the
 // messages from the main program should be duplicated here with the same
@@ -201,8 +200,7 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => '$locale';
 
-""" +
-      (releaseMode ? overrideLookup : '');
+${releaseMode ? overrideLookup : ''}""";
 
   String overrideLookup = """
   String lookupMessage(
@@ -243,7 +241,7 @@ class MessageLookup extends MessageLookupByLibrary {
     output.write('Map<String, LibraryLoader> _deferredLibraries = {\n');
     for (var rawLocale in allLocales) {
       var locale = Intl.canonicalizedLocale(rawLocale);
-      var loadOperation = (useDeferredLoading) ? "  '$locale': ${libraryName(locale)}.loadLibrary,\n" : "  '$locale': () => new Future.value(null),\n";
+      var loadOperation = (useDeferredLoading) ? "  '$locale': ${libraryName(locale)}.loadLibrary,\n" : "  '$locale': () => new SynchronousFuture(null),\n";
       output.write(loadOperation);
     }
     output.write('};\n');
@@ -272,11 +270,10 @@ class MessageLookup extends MessageLookupByLibrary {
 // ignore_for_file:comment_references
 
 import 'dart:async';
-
+${useDeferredLoading ? '' : "\nimport 'package:flutter/foundation.dart';"}
 import 'package:$intlImportPath/intl.dart';
 import 'package:$intlImportPath/message_lookup_by_library.dart';
 import 'package:$intlImportPath/src/intl_helpers.dart';
-import 'package:moduled_intl_utils/src/utils/multiple_composite_lookup.dart';
 
 """;
 
@@ -287,19 +284,19 @@ import 'package:moduled_intl_utils/src/utils/multiple_composite_lookup.dart';
 }
 
 /// User programs should call this before using [localeName] for messages.
-Future<bool> initializeMessages(String localeName) async {
+Future<bool> initializeMessages(String localeName) ${useDeferredLoading ? 'async ' : ''}{
   var availableLocale = Intl.verifiedLocale(
     localeName,
     (locale) => _deferredLibraries[locale] != null,
     onFailure: (_) => null);
   if (availableLocale == null) {
-    return new Future.value(false);
+    return ${useDeferredLoading ? 'new Future.value(false)' : 'new SynchronousFuture(false)'};
   }
   var lib = _deferredLibraries[availableLocale];
-  await (lib == null ? new Future.value(false) : lib());
-  initializeInternalMessageLookup(() => new MultipleCompositeMessageLookup());
+  ${useDeferredLoading ? 'await (lib == null ? new Future.value(false) : lib());' : 'lib == null ? new SynchronousFuture(false) : lib();'}
+  initializeInternalMessageLookup(() => new CompositeMessageLookup());
   messageLookup.addLocale(availableLocale, _findGeneratedMessagesFor);
-  return new Future.value(true);
+  return ${useDeferredLoading ? 'new Future.value(true)' : 'new SynchronousFuture(true)'};
 }
 
 bool _messagesExistFor(String locale) {
@@ -329,10 +326,7 @@ import '${generatedFilePrefix}messages_all.dart' show evaluateJsonTemplate;
 ''';
 
   @override
-  String prologue(locale) =>
-      super.prologue(locale) +
-      '''
-  String evaluateMessage(translation, List<dynamic> args) {
+  String prologue(locale) => '''${super.prologue(locale)}  String evaluateMessage(translation, List<dynamic> args) {
     return evaluateJsonTemplate(translation, args);
   }
 ''';
@@ -374,9 +368,7 @@ import '${generatedFilePrefix}messages_all.dart' show evaluateJsonTemplate;
   }
 
   @override
-  String get closing =>
-      super.closing +
-      '''
+  String get closing => '''${super.closing}
 /// Turn the JSON template into a string.
 ///
 /// We expect one of the following forms for the template.
@@ -464,6 +456,7 @@ abstract class TranslatedMessage {
 
   /// For backward compatibility, we still have the originalMessage API.
   MainMessage? get originalMessage => originalMessages?.first;
+
   set originalMessage(MainMessage? m) {
     if (m != null) {
       originalMessages = [m];
@@ -486,7 +479,7 @@ abstract class TranslatedMessage {
 
 /// We can't use a hyphen in a Dart library name, so convert the locale
 /// separator to an underscore.
-String libraryName(String x) => 'messages_' + x.replaceAll('-', '_').toLowerCase();
+String libraryName(String x) => 'messages_${x.replaceAll('-', '_').toLowerCase()}';
 
 bool _hasArguments(MainMessage message) => message.arguments != null && message.arguments!.isNotEmpty;
 

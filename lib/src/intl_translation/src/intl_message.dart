@@ -180,7 +180,7 @@ abstract class Message {
         .toList();
     NamedExpression? args = namedExpArgs.isNotEmpty ? namedExpArgs.first : null;
 
-    var parameterNames = outerArgs.map((x) => x.identifier?.name).toList();
+    var parameterNames = outerArgs.map((x) => x.name?.lexeme).toList();
     var hasArgs = args != null;
     var hasParameters = outerArgs.isNotEmpty;
     if (!nameAndArgsGenerated && !hasArgs && hasParameters) {
@@ -193,10 +193,10 @@ abstract class Message {
     }
     var namedExpNames = arguments
         .where((eachArg) =>
-            eachArg is NamedExpression && eachArg.name.label.name == 'name')
+    eachArg is NamedExpression && eachArg.name.label.name == 'name')
         .toList();
     var messageNameArgument =
-        namedExpNames.isNotEmpty ? namedExpNames.first : null;
+    namedExpNames.isNotEmpty ? namedExpNames.first : null;
 
     var nameExpression = messageNameArgument?.expression;
     String? messageName;
@@ -243,7 +243,7 @@ abstract class Message {
     }
 
     var simpleArguments = arguments.where((each) =>
-        each is NamedExpression &&
+    each is NamedExpression &&
         ['desc', 'name'].contains(each.name.label.name));
     var values = simpleArguments.map((each) => each.expression).toList();
     for (var arg in values) {
@@ -254,7 +254,7 @@ abstract class Message {
 
     if (hasParameters) {
       var exampleArg = arguments.where((each) =>
-          each is NamedExpression && each.name.label.name == 'examples');
+      each is NamedExpression && each.name.label.name == 'examples');
       var examples = exampleArg.map((each) => each.expression).toList();
       if (examples.isEmpty && examplesRequired) {
         return 'Examples must be provided for messages with parameters';
@@ -291,16 +291,16 @@ abstract class Message {
   /// For a method foo in class Bar we allow either "foo" or "Bar_Foo" as the
   /// name.
   static String? classPlusMethodName(MethodInvocation node, String? outerName) {
-    ClassOrMixinDeclaration? classNode(n) {
+    ClassDeclaration? classNode(n) {
       if (n == null) return null;
-      if (n is ClassOrMixinDeclaration) return n;
+      if (n is ClassDeclaration) return n;
       return classNode(n.parent);
     }
 
     var classDeclaration = classNode(node);
     return classDeclaration == null
         ? null
-        : '${classDeclaration.name.token}_$outerName';
+        : '${classDeclaration.name}_$outerName';
   }
 
   /// Turn a value, typically read from a translation file or created out of an
@@ -347,9 +347,9 @@ abstract class Message {
       r'$': r'\$'
     };
 
-    String _escape(String s) => escapes[s] ?? s;
+    String escape(String s) => escapes[s] ?? s;
 
-    var escaped = value.splitMapJoin('', onNonMatch: _escape);
+    var escaped = value.splitMapJoin('', onNonMatch: escape);
     return escaped;
   }
 
@@ -362,7 +362,7 @@ abstract class Message {
 /// Abstract class for messages with internal structure, representing the
 /// main Intl.message call, plurals, and genders.
 abstract class ComplexMessage extends Message {
-  ComplexMessage(parent) : super(parent);
+  ComplexMessage(super.parent);
 
   /// When we create these from strings or from AST nodes, we want to look up
   /// and set their attributes by string names, so we override the indexing
@@ -392,7 +392,7 @@ abstract class ComplexMessage extends Message {
 class CompositeMessage extends Message {
   late List<Message> pieces;
 
-  CompositeMessage.withParent(parent) : super(parent);
+  CompositeMessage.withParent(super.parent);
   CompositeMessage(this.pieces, Message? parent) : super(parent) {
     for (var x in pieces) {
       x.parent = this;
@@ -406,7 +406,7 @@ class CompositeMessage extends Message {
   List<Object?> toJson() => pieces.map((each) => each.toJson()).toList();
 
   @override
-  String toString() => 'CompositeMessage(' + pieces.toString() + ')';
+  String toString() => 'CompositeMessage($pieces)';
 
   @override
   String expanded([Function f = _nullTransform]) =>
@@ -461,8 +461,8 @@ class VariableSubstitution extends Message {
     if (_index == -1) {
       throw ArgumentError(
           "Cannot find parameter named '$_variableNameUpper' in "
-          "message named '$name'. Available "
-          'parameters are $arguments');
+              "message named '$name'. Available "
+              'parameters are $arguments');
     }
     return _index;
   }
@@ -630,7 +630,7 @@ class MainMessage extends ComplexMessage {
 
   String turnInterpolationBackIntoStringForm(Message message, chunk) {
     if (chunk is String) return escapeAndValidateString(chunk);
-    if (chunk is int) return r'${' + message.arguments[chunk] + '}';
+    if (chunk is int) return '${r'${' + message.arguments[chunk]}}';
     if (chunk is Message) return chunk.toCode();
     throw ArgumentError.value(chunk, 'Unexpected value in Intl.message');
   }
@@ -675,8 +675,8 @@ class MainMessage extends ComplexMessage {
       case 'name':
         name = value;
         return;
-      // We use the actual args from the parser rather than what's given in the
-      // arguments to Intl.message.
+    // We use the actual args from the parser rather than what's given in the
+    // arguments to Intl.message.
       case 'args':
         return;
       case 'meaning':
@@ -704,8 +704,8 @@ class MainMessage extends ComplexMessage {
         return examples;
       case 'name':
         return name;
-      // We use the actual args from the parser rather than what's given in the
-      // arguments to Intl.message.
+    // We use the actual args from the parser rather than what's given in the
+    // arguments to Intl.message.
       case 'args':
         return [];
       case 'meaning':
@@ -772,8 +772,7 @@ abstract class SubMessage extends ComplexMessage {
 
   @override
   String expanded([Function f = _nullTransform]) {
-    String fullMessageForClause(String key) =>
-        key + '{' + f(parent, this[key]).toString() + '}';
+    String fullMessageForClause(String key) => '$key{${f(parent, this[key])}}';
     var clauses = attributeNames
         .where((key) => this[key] != null)
         .map(fullMessageForClause)
@@ -791,8 +790,8 @@ abstract class SubMessage extends ComplexMessage {
     var args = codeAttributeNames.where((attribute) => this[attribute] != null);
     args.fold(
         out,
-        (StringBuffer buffer, arg) =>
-            buffer..write(", $arg: '${this[arg].toCode()}'"));
+            (StringBuffer buffer, arg) =>
+        buffer..write(", $arg: '${this[arg].toCode()}'"));
     out.write(')}');
     return out.toString();
   }
@@ -824,8 +823,7 @@ class Gender extends SubMessage {
   /// clauses. Each clause is expected to be a list whose first element is a
   /// variable name and whose second element is either a [String] or
   /// a list of strings and [Message] or [VariableSubstitution].
-  Gender.from(String mainArgument, List clauses, Message? parent)
-      : super.from(mainArgument, clauses, parent);
+  Gender.from(super.mainArgument, super.clauses, super.parent) : super.from();
 
   Message? female;
 
@@ -882,8 +880,7 @@ class Gender extends SubMessage {
 
 class Plural extends SubMessage {
   Plural();
-  Plural.from(String mainArgument, List clauses, Message? parent)
-      : super.from(mainArgument, clauses, parent);
+  Plural.from(super.mainArgument, super.clauses, super.parent) : super.from();
 
   Message? zero;
 
@@ -917,24 +914,24 @@ class Plural extends SubMessage {
     var value = Message.from(rawValue, this);
     switch (attributeName) {
       case 'zero':
-        // We prefer an explicit "=0" clause to a "ZERO"
-        // if both are present.
+      // We prefer an explicit "=0" clause to a "ZERO"
+      // if both are present.
         zero ??= value;
         return;
       case '=0':
         zero = value;
         return;
       case 'one':
-        // We prefer an explicit "=1" clause to a "ONE"
-        // if both are present.
+      // We prefer an explicit "=1" clause to a "ONE"
+      // if both are present.
         one ??= value;
         return;
       case '=1':
         one = value;
         return;
       case 'two':
-        // We prefer an explicit "=2" clause to a "TWO"
-        // if both are present.
+      // We prefer an explicit "=2" clause to a "TWO"
+      // if both are present.
         two ??= value;
         return;
       case '=2':
@@ -991,8 +988,7 @@ class Select extends SubMessage {
   /// clauses. Each clause is expected to be a list whose first element is a
   /// variable name and whose second element is either a String or
   /// a list of strings and [Message]s or [VariableSubstitution]s.
-  Select.from(String mainArgument, List clauses, Message? parent)
-      : super.from(mainArgument, clauses, parent);
+  Select.from(super.mainArgument, super.clauses, super.parent) : super.from();
 
   Map<String, Message> cases = <String, Message>{};
 
@@ -1072,8 +1068,8 @@ class Select extends SubMessage {
     out.write(', {');
     args.fold(
         out,
-        (StringBuffer buffer, arg) =>
-            buffer..write("'$arg': '${this[arg]?.toCode()}', "));
+            (StringBuffer buffer, arg) =>
+        buffer..write("'$arg': '${this[arg]?.toCode()}', "));
     out.write('})}');
     return out.toString();
   }

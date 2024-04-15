@@ -272,7 +272,7 @@ class MessageFindingVisitor extends GeneralizingAstVisitor {
   /// encountered before seeing the Intl.message call.
   @override
   void visitMethodDeclaration(MethodDeclaration node) {
-    name = node.name.name;
+    name = node.name.lexeme;
     parameters = node.parameters?.parameters ?? _emptyParameterList;
     documentation = node.documentationComment;
     super.visitMethodDeclaration(node);
@@ -285,7 +285,7 @@ class MessageFindingVisitor extends GeneralizingAstVisitor {
   /// encountered before seeing the Intl.message call.
   @override
   void visitFunctionDeclaration(FunctionDeclaration node) {
-    name = node.name.name;
+    name = node.name.lexeme;
     parameters =
         node.functionExpression.parameters?.parameters ?? _emptyParameterList;
     documentation = node.documentationComment;
@@ -302,7 +302,7 @@ class MessageFindingVisitor extends GeneralizingAstVisitor {
     // We don't support names in list declarations,
     // e.g. String first, second = Intl.message(...);
     if (node.fields.variables.length == 1) {
-      name = node.fields.variables.first.name.name;
+      name = node.fields.variables.first.name.lexeme;
     } else {
       name = null;
     }
@@ -321,7 +321,7 @@ class MessageFindingVisitor extends GeneralizingAstVisitor {
     // We don't support names in list declarations,
     // e.g. String first, second = Intl.message(...);
     if (node.variables.variables.length == 1) {
-      name = node.variables.variables.first.name.name;
+      name = node.variables.variables.first.name.lexeme;
     } else {
       name = null;
     }
@@ -405,9 +405,9 @@ class MessageFindingVisitor extends GeneralizingAstVisitor {
       }
       // TODO(alanknight): We may want to require the descriptions to match.
       var existingCode =
-          existing.toOriginalCode(includeDesc: false, includeExamples: false);
+      existing.toOriginalCode(includeDesc: false, includeExamples: false);
       var messageCode =
-          message.toOriginalCode(includeDesc: false, includeExamples: false);
+      message.toOriginalCode(includeDesc: false, includeExamples: false);
       if (existingCode != messageCode) {
         return 'WARNING: Duplicate message name:\n'
             "'${message.name}' occurs more than once in ${extraction.origin}";
@@ -428,14 +428,14 @@ class MessageFindingVisitor extends GeneralizingAstVisitor {
   MainMessage? _messageFromNode(
       MethodInvocation node,
       MainMessage? Function(MainMessage message, List<AstNode> arguments)
-          extract,
+      extract,
       void Function(MainMessage message, String fieldName, Object? fieldValue)
-          setAttribute) {
+      setAttribute) {
     var message = MainMessage();
     message.sourcePosition = node.offset;
     message.endPosition = node.end;
     message.arguments = parameters
-        ?.map((x) => x.identifier?.name)
+        ?.map((x) => x.name?.lexeme)
         .where((x) => x != null)
         .cast<String>()
         .toList();
@@ -472,7 +472,7 @@ class MessageFindingVisitor extends GeneralizingAstVisitor {
         // a name based on that plus meaning, if present.
         var simpleName = (arguments.first as StringLiteral).stringValue;
         message.name =
-            computeMessageName(message.name, simpleName, message.meaning)!;
+        computeMessageName(message.name, simpleName, message.meaning)!;
       }
     }
     return message;
@@ -488,7 +488,7 @@ class MessageFindingVisitor extends GeneralizingAstVisitor {
       if (interpolation.pieces.any((x) => x is String && x.isNotEmpty)) {
         throw IntlMessageExtractionException(
             'Plural and gender expressions must be at the top level, '
-            'they cannot be embedded in larger string literals.\n');
+                'they cannot be embedded in larger string literals.\n');
       }
     }
     return interpolation.pieces;
@@ -531,7 +531,7 @@ class MessageFindingVisitor extends GeneralizingAstVisitor {
   MainMessage? messageFromDirectPluralOrGenderCall(MethodInvocation node) {
     MainMessage extractFromPluralOrGender(MainMessage message, _) {
       var visitor =
-          PluralAndGenderVisitor(message.messagePieces, message, extraction);
+      PluralAndGenderVisitor(message.messagePieces, message, extraction);
       node.accept(visitor);
       return message;
     }
@@ -601,13 +601,13 @@ class InterpolationVisitor extends SimpleAstVisitor {
 
   void lookForPluralOrGender(InterpolationExpression node) {
     var visitor =
-        PluralAndGenderVisitor(pieces, message as ComplexMessage, extraction);
+    PluralAndGenderVisitor(pieces, message as ComplexMessage, extraction);
     node.accept(visitor);
     if (!visitor.foundPluralOrGender) {
       throw IntlMessageExtractionException(
           'Only simple identifiers and Intl.plural/gender/select expressions '
-          'are allowed in message '
-          'interpolation expressions.\nError at $node');
+              'are allowed in message '
+              'interpolation expressions.\nError at $node');
     }
   }
 
@@ -657,7 +657,7 @@ class PluralAndGenderVisitor extends SimpleAstVisitor {
     var reason = checkValidity(node.expression as MethodInvocation);
     if (reason != null) throw reason;
     var message =
-        messageFromMethodInvocation(node.expression as MethodInvocation);
+    messageFromMethodInvocation(node.expression as MethodInvocation);
     foundPluralOrGender = true;
     pieces.add(message);
     super.visitInterpolationExpression(node);
@@ -706,7 +706,7 @@ class PluralAndGenderVisitor extends SimpleAstVisitor {
       default:
         throw IntlMessageExtractionException(
             'Invalid plural/gender/select message ${node.methodName.name} '
-            'in $node');
+                'in $node');
     }
     message.parent = parent;
 

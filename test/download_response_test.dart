@@ -1,11 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:moduled_intl_utils/src/localizely/model/download_response.dart';
 import 'package:test/test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:http/http.dart';
-
-import 'package:intl_utils/src/localizely/model/download_response.dart';
 
 import 'download_response_test.mocks.dart';
 
