@@ -180,7 +180,7 @@ abstract class Message {
         .toList();
     NamedExpression? args = namedExpArgs.isNotEmpty ? namedExpArgs.first : null;
 
-    var parameterNames = outerArgs.map((x) => x.identifier?.name).toList();
+    var parameterNames = outerArgs.map((x) => x.name?.lexeme).toList();
     var hasArgs = args != null;
     var hasParameters = outerArgs.isNotEmpty;
     if (!nameAndArgsGenerated && !hasArgs && hasParameters) {
@@ -291,16 +291,16 @@ abstract class Message {
   /// For a method foo in class Bar we allow either "foo" or "Bar_Foo" as the
   /// name.
   static String? classPlusMethodName(MethodInvocation node, String? outerName) {
-    ClassOrMixinDeclaration? classNode(n) {
+    ClassDeclaration? classNode(n) {
       if (n == null) return null;
-      if (n is ClassOrMixinDeclaration) return n;
+      if (n is ClassDeclaration) return n;
       return classNode(n.parent);
     }
 
     var classDeclaration = classNode(node);
     return classDeclaration == null
         ? null
-        : '${classDeclaration.name.token}_$outerName';
+        : '${classDeclaration.name}_$outerName';
   }
 
   /// Turn a value, typically read from a translation file or created out of an
@@ -347,9 +347,9 @@ abstract class Message {
       r'$': r'\$'
     };
 
-    String _escape(String s) => escapes[s] ?? s;
+    String escape(String s) => escapes[s] ?? s;
 
-    var escaped = value.splitMapJoin('', onNonMatch: _escape);
+    var escaped = value.splitMapJoin('', onNonMatch: escape);
     return escaped;
   }
 
@@ -362,7 +362,7 @@ abstract class Message {
 /// Abstract class for messages with internal structure, representing the
 /// main Intl.message call, plurals, and genders.
 abstract class ComplexMessage extends Message {
-  ComplexMessage(parent) : super(parent);
+  ComplexMessage(super.parent);
 
   /// When we create these from strings or from AST nodes, we want to look up
   /// and set their attributes by string names, so we override the indexing
@@ -392,7 +392,7 @@ abstract class ComplexMessage extends Message {
 class CompositeMessage extends Message {
   late List<Message> pieces;
 
-  CompositeMessage.withParent(parent) : super(parent);
+  CompositeMessage.withParent(super.parent);
   CompositeMessage(this.pieces, Message? parent) : super(parent) {
     for (var x in pieces) {
       x.parent = this;
@@ -406,7 +406,7 @@ class CompositeMessage extends Message {
   List<Object?> toJson() => pieces.map((each) => each.toJson()).toList();
 
   @override
-  String toString() => 'CompositeMessage(' + pieces.toString() + ')';
+  String toString() => 'CompositeMessage($pieces)';
 
   @override
   String expanded([Function f = _nullTransform]) =>
@@ -630,7 +630,7 @@ class MainMessage extends ComplexMessage {
 
   String turnInterpolationBackIntoStringForm(Message message, chunk) {
     if (chunk is String) return escapeAndValidateString(chunk);
-    if (chunk is int) return r'${' + message.arguments[chunk] + '}';
+    if (chunk is int) return '${r'${' + message.arguments[chunk]}}';
     if (chunk is Message) return chunk.toCode();
     throw ArgumentError.value(chunk, 'Unexpected value in Intl.message');
   }
@@ -772,8 +772,7 @@ abstract class SubMessage extends ComplexMessage {
 
   @override
   String expanded([Function f = _nullTransform]) {
-    String fullMessageForClause(String key) =>
-        key + '{' + f(parent, this[key]).toString() + '}';
+    String fullMessageForClause(String key) => '$key{${f(parent, this[key])}}';
     var clauses = attributeNames
         .where((key) => this[key] != null)
         .map(fullMessageForClause)
@@ -824,8 +823,7 @@ class Gender extends SubMessage {
   /// clauses. Each clause is expected to be a list whose first element is a
   /// variable name and whose second element is either a [String] or
   /// a list of strings and [Message] or [VariableSubstitution].
-  Gender.from(String mainArgument, List clauses, Message? parent)
-      : super.from(mainArgument, clauses, parent);
+  Gender.from(super.mainArgument, super.clauses, super.parent) : super.from();
 
   Message? female;
 
@@ -882,8 +880,7 @@ class Gender extends SubMessage {
 
 class Plural extends SubMessage {
   Plural();
-  Plural.from(String mainArgument, List clauses, Message? parent)
-      : super.from(mainArgument, clauses, parent);
+  Plural.from(super.mainArgument, super.clauses, super.parent) : super.from();
 
   Message? zero;
 
@@ -991,8 +988,7 @@ class Select extends SubMessage {
   /// clauses. Each clause is expected to be a list whose first element is a
   /// variable name and whose second element is either a String or
   /// a list of strings and [Message]s or [VariableSubstitution]s.
-  Select.from(String mainArgument, List clauses, Message? parent)
-      : super.from(mainArgument, clauses, parent);
+  Select.from(super.mainArgument, super.clauses, super.parent) : super.from();
 
   Map<String, Message> cases = <String, Message>{};
 
